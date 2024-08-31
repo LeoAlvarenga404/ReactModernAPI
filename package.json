@@ -6,7 +6,7 @@
   "build": "echo 'No build step required'",
   "start": "node index.js",
   "dev": "nodemon index.js",
-  "postinstall": "prisma generate"
+  "vercel-build": "npx prisma generate && npx prisma migrate deploy"
   
 },
   "keywords": [],
