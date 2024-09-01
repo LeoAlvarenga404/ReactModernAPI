@@ -3,8 +3,11 @@ const prisma = new PrismaClient();
 
 // Função que cria um estudo
 exports.createEstudo = async (req, res) => {
-  const { nome, descricao, porcentagemConcluida, finalizado } = req.body;
+  const { nome, descricao, porcentagemConcluida } = req.body;
 
+  // Definir finalizado como true se porcentagemConcluida for 100, caso contrário false
+  const finalizado = porcentagemConcluida >= 100;
+  
     const novoEstudo = await prisma.estudo.create({
       data: {
         nome,
@@ -14,28 +17,23 @@ exports.createEstudo = async (req, res) => {
       },
     });
     res.status(201).json(novoEstudo);
- 
-};
+  }
 
-// Função que apaga um estudo específico
 exports.deleteEstudo = async (req, res) => {
   const { id } = req.params;
-  try {
+ 
     await prisma.estudo.delete({
       where: { id: parseInt(id) },
     });
     res.status(204).send();
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Erro ao deletar o estudo' });
-  }
 };
 
-// Função que atualiza um estudo específico
 exports.updateEstudo = async (req, res) => {
   const { id } = req.params;
-  const { nome, descricao, porcentagemConcluida, finalizado } = req.body;
-  try {
+  const { nome, descricao, porcentagemConcluida } = req.body;
+
+  const finalizado = porcentagemConcluida >= 100;
+
     const estudo = await prisma.estudo.update({
       where: { id: parseInt(id) },
       data: {
@@ -46,14 +44,7 @@ exports.updateEstudo = async (req, res) => {
       },
     });
     res.json(estudo);
-  } catch (error) {
-    console.error(error);
-    if (error.code === 'P2025') {
-      res.status(404).json({ error: 'Estudo não encontrado' });
-    } else {
-      res.status(500).json({ error: 'Erro ao atualizar o estudo' });
-    }
-  }
+
 };
 
 // Função que lista tudo
@@ -78,3 +69,4 @@ exports.getEstudoById = async (req, res) => {
     res.status(500).json({ error: 'Erro ao buscar o estudo' });
   }
 };
+
