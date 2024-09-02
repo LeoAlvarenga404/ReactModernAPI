@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { createEstudo, deleteEstudo, updateEstudo, getAllEstudos, getEstudoById } = require('../controllers/estudoController');
+const estudoController = require('../controllers/estudoController');
 
-router.post('/', createEstudo);
+router.post('/', estudoController.createEstudo);
 
-router.delete('/:id', deleteEstudo);
+router.delete('/:id/:userId', estudoController.deleteEstudo);
 
-router.put('/:id', updateEstudo);
+router.put('/:id/:userId', estudoController.updateEstudo);
 
-router.get('/', getAllEstudos);
+router.get('/user/:userId', estudoController.getAllEstudos);
 
-router.get('/:id', getEstudoById);
+router.get('/:id/:userId', estudoController.getEstudoById);
 
 module.exports = router;
