@@ -3,34 +3,22 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const estudoRoutes = require('./routes/estudoRoutes');
 const authRoutes = require('./routes/userRoutes');
+const errorHandler = require('./middlewares/errorHandler');
+require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
+app.use(cors({ origin: '*' }));
 
-app.use(cors({
-  origin: '*', 
-}));
-
+// exportei esses arquivos do routes e dentro dele tem cada caminho com seus http requests.
 app.use('/estudos', estudoRoutes);
 app.use('/usuarios', authRoutes);
+
+// middleware para mostrar erro caso o banco não seja conectado
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
 });
-
-
-// {
-//   "nome": "João Silva",
-//   "email": "joao.silva@example.com",
-//   "senha": "senha123" 
-// }
-
-// {
-//   "nome": "Estudo sobre JavaScript",
-//   "porcentagem": 50,
-//   "tempoEstimado": 300,
-//   "status": "Em andamento",
-//   "userId": 1
-// }

@@ -2,14 +2,12 @@ const express = require('express');
 const router = express.Router();
 const estudoController = require('../controllers/estudoController');
 
-router.post('/', estudoController.createEstudo);
+// aqui eu posso definir qualquer rota que vai ser utilizada para chamar a função que eu criei
 
-router.delete('/:id/:userId', estudoController.deleteEstudo);
-
-router.put('/:id/:userId', estudoController.updateEstudo);
-
-router.get('/user/:userId', estudoController.getAllEstudos);
-
-router.get('/:id/:userId', estudoController.getEstudoById);
+router.post('/', estudoController.criarEstudo);
+router.delete('/:id/:userId', estudoController.deletarEstudo);
+router.put('/:id/:userId', estudoController.atualizarEstudo);
+router.get('/user/:userId', estudoController.obterTodosEstudos);
+router.get('/:id/:userId', estudoController.obterEstudoPeloId);
 
 module.exports = router;

@@ -2,10 +2,11 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 
-router.post('/register', authController.createUser);
 
-router.post('/login', authController.loginUser);
+// aqui eu posso definir qualquer rota que vai ser utilizada para chamar a função que eu criei
+router.post('/register', authController.criarUsuario);
+router.post('/login', authController.loginUsuario);
+router.get('/', authController.obterTodosUsuarios);
 
-router.get('/', authController.getAllUsuarios);
-
+// tem q exportar esse router para ser usado no index.js
 module.exports = router;
