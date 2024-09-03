@@ -4,111 +4,106 @@ const { PrismaClient } = require('@prisma/client');
 // Depois de importar o prismaclient, esse aqui cria uma instância para acessar o banco 
 const prisma = new PrismaClient();
 
-// Função que cria um novo estudo
+// func cria um novo estudo
 async function criarEstudo(req, res) {
-  // Extrai título, descrição, porcentagem e userId do corpo da requisição
+  // pega o título, descrição, porcentagem e o userId do body
   const { titulo, descricao, porcentagem, userId } = req.body;
 
-  // Verifica se o título e o userId foram fornecidos
+  // na hora de fazer o post, verifica se tem titulo e o id do usuario (obrigatórios)
   if (!titulo || !userId) {
     return res.status(400).json({ error: 'Título e userId são obrigatórios' });
   }
 
-  // Define o status com base na porcentagem concluída
   const status = porcentagem >= 100 ? 'Concluído' : 'Em Progresso';
   
-  // Cria um novo estudo no banco de dados
+  // func cria um novo estudo no banco
   const novoEstudo = await prisma.study.create({
-    data: { titulo, descricao, porcentagem, status, userId: parseInt(userId, 10) },
+    data: { titulo, descricao, porcentagem, status, userId: parseInt(userId, 10) }, // parseint é para converter o userId para um inteiro caso não seja, para não dar erro na hora do post.
   });
   
-  // Retorna o novo estudo criado
+  // json com o estudo que foi criado atraves do post
   res.status(201).json(novoEstudo);
 }
 
-// Função para deletar um estudo existente
+// func deletar um estudo existente
 async function deletarEstudo(req, res) {
-  // Extrai id e userId dos parâmetros da requisição
+  // pega o id e o user id do parametro da rota 
   const { id, userId } = req.params;
 
-  // Busca o estudo pelo id e userId fornecidos
+  // busca o estudo pelo id e o userId fornecidos
   const estudo = await prisma.study.findFirst({
     where: { id: parseInt(id, 10), userId: parseInt(userId, 10) },
   });
 
-  // Verifica se o estudo existe e pertence ao usuário
+  // verifica se o estudo existe e pertence ao usuário 
   if (!estudo) {
     return res.status(404).json({ error: 'Estudo não encontrado ou não pertence ao usuário.' });
   }
 
-  // Deleta o estudo do banco de dados
+  // deleta o estudo do banco de dados
   await prisma.study.delete({ where: { id: parseInt(id, 10) } });
   
-  // Retorna status 204 indicando que a operação foi bem-sucedida e não há conteúdo para retornar
+  // opcional, retorna 204 que a requisição foi sucedida e não tem nenhum retorno
   res.status(204).send();
 }
 
-// Função para atualizar um estudo existente
+// func atualiza um estudo (PUT)
 async function atualizarEstudo(req, res) {
-  // Extrai id, userId e os novos dados do corpo da requisição
+  // pega o id, userId do paramatro da rota
   const { id, userId } = req.params;
+  // pega o titulo, descricao, porcentagem do body
   const { titulo, descricao, porcentagem } = req.body;
 
-  // Define o status com base na porcentagem concluída
   const status = porcentagem >= 100 ? 'Concluído' : 'Em Progresso';
   
-  // Busca o estudo pelo id e userId fornecidos
+  // busca o estudo pelo id e userId fornecidos
   const estudo = await prisma.study.findFirst({
     where: { id: parseInt(id, 10), userId: parseInt(userId, 10) },
   });
 
-  // Verifica se o estudo existe e pertence ao usuário
+  // verifica se o estudo existe e pertence ao usuário
   if (!estudo) {
     return res.status(404).json({ error: 'Estudo não encontrado ou não pertence ao usuário.' });
   }
 
-  // Atualiza o estudo com os novos dados
+  // atualiza o estudo com os novos dados
   const estudoAtualizado = await prisma.study.update({
     where: { id: parseInt(id, 10) },
     data: { titulo, descricao, porcentagem, status },
   });
 
-  // Retorna o estudo atualizado
+  // retorna o estudo atualizado
   res.json(estudoAtualizado);
 }
 
-// Função para obter todos os estudos de um usuário
+// func que pega todos os estudos que tem no usuário fornecido.
 async function obterTodosEstudos(req, res) {
-  // Extrai userId dos parâmetros da requisição
+
   const { userId } = req.params;
 
-  // Busca todos os estudos do banco de dados para o userId fornecido
+  // Busca todos os estudos do usuário
   const estudos = await prisma.study.findMany({ where: { userId: parseInt(userId, 10) } });
   
   // Retorna a lista de estudos
   res.json(estudos);
 }
 
-// Função para obter um estudo específico por id
+// func que busca um estudo específico (por id do usuario e id do estudo)
 async function obterEstudoPeloId(req, res) {
-  // Extrai id e userId dos parâmetros da requisição
+
   const { id, userId } = req.params;
 
-  // Busca o estudo pelo id e userId fornecidos
   const estudo = await prisma.study.findFirst({
     where: { id: parseInt(id, 10), userId: parseInt(userId, 10) },
   });
 
-  // Verifica se o estudo existe e pertence ao usuário
   if (!estudo) {
     return res.status(404).json({ error: 'Estudo não encontrado ou não pertence ao usuário.' });
   }
-
-  // Retorna o estudo encontrado
   res.json(estudo);
 }
 
-// exporta as funções
+// exporta as funções que sera usado no routes para definir as rotas de requisição.
 
 module.exports = {
   criarEstudo,

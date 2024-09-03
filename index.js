@@ -16,7 +16,7 @@ app.use(cors({ origin: '*' }));
 app.use('/estudos', estudoRoutes);
 app.use('/usuarios', authRoutes);
 
-// middleware para mostrar erro caso o banco não seja conectado
+// middleware para mostrar erro do servidor.
 app.use(errorHandler);
 
 app.listen(port, () => {
