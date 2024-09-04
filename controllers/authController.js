@@ -42,35 +42,30 @@ async function criarUsuario(req, res) {
 
 // Função para fazer login de um usuário
 async function loginUsuario(req, res) {
-  // pega o email e a senha do body
   const { email, senha } = req.body;
 
-  // verifica se email e senha estão preenchidos. Isso depende também das dependencias de como é a estrutura da tabela Usuário, se tiver mais dados obrigatórios, aqui terá mais.
   if (!email || !senha) {
     return res.status(400).json({ erro: 'Email e senha são obrigatórios' });
   }
 
-    // Busca o usuário pelo email que foi passado
-    const usuario = await prisma.user.findUnique({ where: { email } });
+  const usuario = await prisma.user.findUnique({ where: { email } });
 
-    if (!usuario) {
-      return res.status(401).json({ erro: 'Email ou senha inválidos' });
-    }
+  if (!usuario) {
+    return res.status(401).json({ erro: 'Email ou senha inválidos' });
+  }
 
-    // esse compare faz a comparação da senha que foi passada no input com a senha criptografada no banco de dados
-    const senhaValida = await bcrypt.compare(senha, usuario.senha);
+  const senhaValida = await bcrypt.compare(senha, usuario.senha);
 
-    if (!senhaValida) {
-      return res.status(401).json({ erro: 'Email ou senha inválidos' });
-    }
+  if (!senhaValida) {
+    return res.status(401).json({ erro: 'Email ou senha inválidos' });
+  }
 
-    // cria um token JWT para o usuário que expira em 1 hora, também precisa do JWT_SECRET que fica na .env
-    const token = jwt.sign({ usuarioId: usuario.id, email: usuario.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+  const token = jwt.sign({ usuarioId: usuario.id, email: usuario.email }, process.env.JWT_SECRET, { expiresIn: '6h' });
 
-    // retorna o token JWT
-    res.json({ token });
-
+  // Retorne tanto o token quanto os dados do usuário
+  res.json({ usuario, token });
 }
+
 
 // Função que puxa todos os usuarios do banco
 async function obterTodosUsuarios(req, res) {
